@@ -10,3 +10,5 @@ Rolled a X-value item (showed X), then a Y-value item (showed X+X+Y, not X+Y). T
 
 ## 3. Warning for "all weights zero" never showed
 I put a warning for "all weights are zero" inside `if(sum <= 0)`. It never printed. Reason: after adding default weight system to pair, i forgot that having `if(defaultWeight > 0) return defaultWeight;` running first, it will blocked all text field content value. Fix: Should only use defaultWeight if text field parsing failed (NaN).
+
+![Gacha roll demo](Assets/_Projects/2.%20Arts/gifpolytron.gif)

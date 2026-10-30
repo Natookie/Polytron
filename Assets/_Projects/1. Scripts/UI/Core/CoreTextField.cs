@@ -106,7 +106,7 @@ public class CoreTextField : MonoBehaviour
         if(char.IsControl(c)) return;
         if(_text.Length >= maxLength) return;
 
-        //Block semua alfabet, karena specific use case
+        //Ambil only digit, karena specific use case
         if(!char.IsDigit(c)) return;
         _text += c;
 

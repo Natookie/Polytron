@@ -10,6 +10,7 @@ public class RollManager : MonoBehaviour
         [SerializeField] private TextBlock percentageInput;
         [SerializeField] private TextBlock placeholderText;
         [SerializeField] private ItemData itemData;
+        [Space(10)]
         [SerializeField][Range(0, 100)] private int defaultWeight;
 
         public TextBlock PercentageInput => percentageInput;
@@ -17,9 +18,8 @@ public class RollManager : MonoBehaviour
         public int DefaultWeight => defaultWeight;
 
         public int GetWeight(){
-            if(defaultWeight > 0) return defaultWeight;
             if(percentageInput == null) return 0;
-            if(!int.TryParse(percentageInput.Text, out int raw)) return 0;
+            if(!int.TryParse(percentageInput.Text, out int raw)) return defaultWeight;
             return Mathf.Clamp(raw, 0, 100);
         }
 
@@ -48,18 +48,18 @@ public class RollManager : MonoBehaviour
 
         var picked = PickWeighted();
         if(picked == null){
-            Debug.Log("picked null");
+            Debug.LogError("picked null");
             return;
         }
 
         currencyManager.UpdatePlayerCurrency(-gachaPrice);
-        Debug.Log($"Rolled: {picked.name}");
+        // Debug.Log($"Rolled: {picked.name}");
 
         InventoryManager.Instance.AddItem(picked);
     }
 
     ItemData PickWeighted(){
-        // 1) Sum Weight + Build Cummulative
+        //1) Sum Weight + Build Cummulative
         var weights = new List<int>(pairs.Length);
         var thresholds = new List<int>(pairs.Length);
         int sum = 0;
@@ -72,11 +72,13 @@ public class RollManager : MonoBehaviour
             sum += w;
             thresholds.Add(sum);
         }
-
         if(weights.Count == 0) return null;
 
         //2) Kalo weight semua 0, pick qeual
-        if(sum <= 0) return PickEqual(weights);
+        if(sum <= 0){
+            Debug.LogWarning("Invalid percentages: total cannot be zero");
+            return PickEqual(weights);
+        }
 
         //3) Roll 1..sum
         int roll = UnityEngine.Random.Range(1, sum + 1);

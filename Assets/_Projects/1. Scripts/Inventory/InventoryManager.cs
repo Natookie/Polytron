@@ -132,7 +132,6 @@ public class InventoryManager : MonoBehaviour
         if(item == null || amount <= 0) return 0;
         int removed = RemoveItem(item, amount);
         int gold = removed * item.SellValue;
-        if(gold > 0) Debug.Log($"Sold {removed}x {item.Rarity} for {gold} gold.");
         return gold;
     }
 

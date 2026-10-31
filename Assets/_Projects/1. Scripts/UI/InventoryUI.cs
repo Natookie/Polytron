@@ -1,10 +1,13 @@
 using UnityEngine;
+using System.Collections.Generic;
 using Nova;
 
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField] private Transform slotContainer;
     [SerializeField] private GameObject slotPrefab;
+
+    private readonly List<InventorySlotUI> children = new();
 
     void Start(){
         if(InventoryManager.Instance != null) InventoryManager.Instance.OnInventoryChanged += Refresh;
@@ -16,16 +19,25 @@ public class InventoryUI : MonoBehaviour
     }
 
     void Refresh(){
-        for(int i = slotContainer.childCount - 1; i >= 0; i--) Destroy(slotContainer.GetChild(i).gameObject);
-
         var inv = InventoryManager.Instance;
         if(inv == null) return;
 
-        int count = inv.Slots.Count;
-        for(int i = 0; i < count; i++){
+        var slots = inv.Slots;
+        int count = slots.Count;
+    
+        while(children.Count < count){
             var go = Instantiate(slotPrefab, slotContainer);
-            var ui = go.GetComponent<InventorySlotUI>();
-            ui.Bind(inv.Slots[i]);
+            children.Add(go.GetComponent<InventorySlotUI>());
+        }
+
+        for(int i = 0; i < children.Count; i++){
+            var ui = children[i];
+
+            if(i < count){
+                ui.gameObject.SetActive(true);
+                ui.Bind(slots[i]);
+            }
+            else ui.gameObject.SetActive(false);
         }
     }
 }
